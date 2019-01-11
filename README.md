@@ -1,6 +1,6 @@
 # A Date Calculator Exercise
 
-##Pre-requisites
+## Pre-requisites
 
 LAMP stack
 
