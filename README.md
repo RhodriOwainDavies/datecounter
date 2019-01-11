@@ -18,5 +18,15 @@ Clone the repository visit the webroot in your browser
 
 ## The Solution
 
-1. Web front-end using JS calendar plug-in
-2. PHP debug data for simplicity
+1. PHP / Web front-end using JS calendar plug-in
+1. Submit form (no validation!) to perform calculation
+1. Instantiate DateCalulator Class
+1. Call relevant functions
+
+## Possible improvements
+
+1. General refactor
+1. Re-visit algorithm to improve performance
+1. Improve interface
+1. Implement code re-use for calculating different units 
+1. PHPUnit tests
