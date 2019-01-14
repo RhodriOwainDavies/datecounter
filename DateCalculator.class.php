@@ -1,5 +1,8 @@
 <?php
 
+/**
+ *
+ */
 class DateCalculator{
 	
 	/**
@@ -58,14 +61,33 @@ class DateCalculator{
 	 *
 	 */
 	public function getWeekdays($unit = 'days') {
-		//find number of complete work weeks
-		$noOfWorkWeeks = $this->getCompleteWorkWeeks();
 		
-		//both dates in same week
-		if ($noOfWorkWeeks == 0) {
-			$noOfWeekdays = date('N', $this->end) - date('N', $this->start) + 1;
+		if ($this->end - $this->start < (self::SECONDS_IN_DAY * 7)) {
+			//less than one week
+			$noOfWeekdays = (($this->end - $this->start) / (self::SECONDS_IN_DAY)) + 1;
 		} else {
-			$noOfWeekdays = (5 * $noOfWorkWeeks);
+			//find first monday after $this->start
+			$startDayOfWeek = date('N', $this->start);
+			if ($startDayOfWeek != 1) {
+				$firstMonday = $this->start + ((8 - $startDayOfWeek) * self::SECONDS_IN_DAY);
+			} else {
+				$firstMonday = $this->start;
+			}
+
+			//find the last Friday before $end
+			$endDayOfWeek = date('N', $this->end);
+			if ($endDayOfWeek != 5) {
+				$lastFriday = $this->end
+					+ ((-2 - $endDayOfWeek) * self::SECONDS_IN_DAY);
+
+			} else {
+				$lastFriday = $this->end;
+			}
+			
+			$startSunday = $firstMonday - self::SECONDS_IN_DAY;
+			$endSunday = $lastFriday + (2 * self::SECONDS_IN_DAY);
+				
+			$noOfWeekdays = (5 * ((($endSunday - $startSunday) / self::SECONDS_IN_DAY)) / 7);
 
 			if (date('N', $this->start) != 1) {
 				$noOfWeekdays += (6 - date('N', $this->start)) ;
@@ -94,6 +116,9 @@ class DateCalculator{
 		}
 	}
 
+	/**
+	 *
+	 */
 	public function getCompleteWeeks($unit = 'weeks') {
 		$weeks = floor($this->getNumberOfDays() / 7);
 
@@ -108,61 +133,11 @@ class DateCalculator{
 				return $weeks * 60 * 24;
 				break;
 			case 'hours':
-				return $weeks * 24;
+				return $weeks * 24 * 7;
 				break;				
 			case 'years':
 				return $weeks / 365;
 				break;
 		}
-	}
-
-	public function getCompleteWorkWeeks($unit = 'weeks') {
-		//find the first Monday after $start
-		$startDayOfWeek = date('N', $this->start);
-		if ($startDayOfWeek != 1) {
-			$firstMonday = $this->start + ((8 - $startDayOfWeek) * self::SECONDS_IN_DAY);
-		} else {
-			$firstMonday = $this->start;
-		}
-	
-		//find the last Friday before $end
-		$endDayOfWeek = date('N', $this->end);
-		if ($endDayOfWeek != 5) {
-			$lastFriday = $this->end
-				- (7 * self::SECONDS_IN_DAY)
-				+ ((5 - $endDayOfWeek) * self::SECONDS_IN_DAY);
-			$lastFriday = $this->end
-				+ ((-2 - $endDayOfWeek) * self::SECONDS_IN_DAY);
-
-		} else {
-			$lastFriday = $this->end;
-		}
-	
-		$startSunday = $firstMonday - self::SECONDS_IN_DAY;
-	
-		$endSunday = $lastFriday + (2 * self::SECONDS_IN_DAY);
-	
-		if (($lastFriday - $firstMonday) <= 0) {
-			return 0;
-		}
-		$workWeeks = ((($endSunday - $startSunday) / self::SECONDS_IN_DAY)) / 7;
-		 
-		switch($unit){
-			default:
-				return $workWeeks;
-				break;
-			case 'seconds':
-				return $workWeeks * 60 * 60 * 24;
-				break;
-			case 'minutes':
-				return $workWeeks * 60 * 24;
-				break;
-			case 'hours':
-				return $workWeeks * 24;
-				break;				
-			case 'years':
-				return $workWeeks / 365;
-				break;
-		} 
 	}
 }

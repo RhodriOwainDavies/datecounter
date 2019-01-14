@@ -25,7 +25,9 @@ Clone the repository visit the webroot in your browser
 
 ## Possible improvements
 
+1. Further Testing
 1. General refactor
+1. PHPDoc
 1. Re-visit algorithm to improve performance
 1. Improve interface
 1. Implement code re-use for calculating different units 
