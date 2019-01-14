@@ -23,6 +23,11 @@ Clone the repository visit the webroot in your browser
 1. Instantiate DateCalulator Class
 1. Call relevant functions
 
+## Run tests
+
+1. run `composer install`
+1. run `vendor/phpunit/phpunit/phpunit tests/DateCalculatorTest.php`
+
 ## Possible improvements
 
 1. Further Testing
