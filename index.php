@@ -114,7 +114,7 @@ $timezones = DateTimeZone::listIdentifiers(DateTimeZone::ALL);
 				<p><?php echo $dateCalculator->getWeekdays($unit) . ' ' . $unit; ?></p>
 			</div>
 
-			<h3>Complete Weeks (Sunday to Saturday)</h3>
+			<h3>Complete Weeks</h3>
 			<div>
 				<p><?php echo $dateCalculator->getCompleteWeeks(); ?> complete weeks</p>
 				<p><?php echo $dateCalculator->getCompleteWeeks($unit) . ' ' . $unit; ?></p>
