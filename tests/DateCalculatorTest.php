@@ -21,7 +21,6 @@ class DateCalculatorTest extends TestCase{
             date('U', strtotime('01/01/2019')),
             date('U', strtotime('01/14/2019'))
         );
-        echo $dateCalculator->getWeekDays();
         $this->assertEquals(10, $dateCalculator->getWeekDays());    
     }
 
