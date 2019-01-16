@@ -37,3 +37,4 @@ Clone the repository visit the webroot in your browser
 1. Improve interface
 1. Implement code re-use for calculating different units 
 1. PHPUnit tests
+1. Read default values from a configuration file
