@@ -35,6 +35,7 @@ $form = new DateCalculatorForm(
                     class="datepicker"
                     type="text"
                     name="start"
+                    autocomplete="off"
                     value="<?php echo $form->getStartDate();?>"
                 />
             </div>
@@ -55,6 +56,7 @@ $form = new DateCalculatorForm(
                     class="datepicker"
                     type="text"
                     name="end"
+                    autocomplete="off"
                     value="<?php echo $form->getEndDate()?>"
                 />
             </div>
