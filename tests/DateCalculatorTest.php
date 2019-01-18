@@ -50,4 +50,16 @@ class DateCalculatorTest extends TestCase{
         $this->assertEquals(29, $dateCalculator->getNumberOfDays('hours'));
     }
     
+    public function testLocalTimezones(){
+        //pass dates in reverse order as additional test
+        $dateCalculator = new DateCalculator(
+            '31/12/2018',
+            '01/01/2018',
+            'Europe/Dublin',
+            'Europe/London'
+        );
+
+        $this->assertEquals(365, $dateCalculator->getNumberOfDays());
+    }
+    
 }
