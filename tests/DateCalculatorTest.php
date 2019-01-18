@@ -9,8 +9,10 @@ class DateCalculatorTest extends TestCase{
 
     public function testCountDays() {
         $dateCalculator = new DateCalculator(
-            date('U', strtotime('yesterday')),
-            date('U', strtotime('today'))
+            '01/01/2019',
+            '02/01/2019',
+            'UTC',
+            'UTC'
         );
 
         $this->assertEquals(2, $dateCalculator->getNumberOfDays());
@@ -18,18 +20,23 @@ class DateCalculatorTest extends TestCase{
 
     public function testGetWeekdays(){
         $dateCalculator = new DateCalculator(
-            date('U', strtotime('01/01/2019')),
-            date('U', strtotime('01/14/2019'))
+            '01/01/2019',
+            '14/01/2019',
+            'UTC',
+            'UTC'
         );
-        $this->assertEquals(10, $dateCalculator->getWeekDays());    
+        $this->assertEquals(10, $dateCalculator->getNumberOfWeekDays());    
     }
 
     public function testGetCompleteWeeks(){
         $dateCalculator = new DateCalculator(
-            date('U', strtotime('01/01/2019')),
-            date('U', strtotime('01/14/2019'))
+            '01/01/2019',
+            '14/01/2019',
+            'UTC',
+            'UTC'
         );
 
-        $this->assertEquals(2, $dateCalculator->getCompleteWeeks());           
+        $this->assertEquals(2, $dateCalculator->getNumberOfCompleteWeeks());           
     }
+    
 }

@@ -8,8 +8,8 @@ $form = new DateCalculatorForm(
     array_key_exists('end', $_GET) ? $_GET['end'] : null,
     array_key_exists('startTimezone', $_GET) ? $_GET['startTimezone'] : null,
     array_key_exists('endTimezone', $_GET) ? $_GET['endTimezone'] : null,
-    array_key_exists('unit', $_GET) ? $_GET['unit'] : null       
-);    
+    array_key_exists('unit', $_GET) ? $_GET['unit'] : null
+);
 ?>
 <html>
     <head>
