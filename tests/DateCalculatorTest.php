@@ -62,4 +62,25 @@ class DateCalculatorTest extends TestCase{
         $this->assertEquals(365, $dateCalculator->getNumberOfDays());
     }
     
+    public function testDateValidation(){
+        $this->expectException(\InvalidArgumentException::class);
+        $dateCalculator = new DateCalculator(
+            '31-12-2018',
+            '01-01/2019',
+            'UTC',
+            'UTC'
+        );
+        
+    }
+    
+    public function testTimezoneValidation(){
+        $this->expectException(\InvalidArgumentException::class);
+        $dateCalculator = new DateCalculator(
+            '31/12/2018',
+            '01/01/2019',
+            'London',
+            'UTC'
+        );
+        
+    }    
 }
