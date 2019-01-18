@@ -89,13 +89,28 @@ class DateCalculator{
         //use utc to figure out individual offsets
         $utc = new DateTime();
         
-        $startOffset = timezone_offset_get(timezone_open($startTimezone), $utc);
-        $endOffset = timezone_offset_get(timezone_open($endTimezone), $utc);
+        try{
+            $startOffset = timezone_offset_get(timezone_open($startTimezone), $utc);
+        } catch (Exception $e){
+            throw new InvalidArgumentException('Start timezone is wrong');
+        }
+        
+        try{
+            $endOffset = timezone_offset_get(timezone_open($endTimezone), $utc);
+        } catch (Exception $e){
+            throw new InvalidArgumentException('End timezone is wrong');
+        }
         
         $startParts = explode('/', $start);
         $endParts = explode('/', $end);
-        
+        if(count($startParts) != 3){
+            throw new InvalidArgumentException('Start date is wrong format');
+        }
         $startTimestamp = mktime(0, 0, $startOffset, $startParts[1], $startParts[0], $startParts[2]);
+        
+        if(count($endParts) != 3){
+            throw new InvalidArgumentException('End date is wrong format');
+        }
         $endTimestamp = mktime(0, 0, $endOffset, $endParts[1], $endParts[0], $endParts[2]);
 
         //allow date values to be passed in, in either order
