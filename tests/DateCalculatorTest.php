@@ -1,8 +1,6 @@
 <?php
 include_once("DateCalculator.class.php");
-//include_once('../vendor/phpunit/phpunit/src/Framework/TestCase.php');
 
-//  use Framework\TestCase;
 use PHPUnit\Framework\TestCase;
 
 class DateCalculatorTest extends TestCase{
@@ -37,6 +35,19 @@ class DateCalculatorTest extends TestCase{
         );
 
         $this->assertEquals(2, $dateCalculator->getNumberOfCompleteWeeks());           
+    }
+    
+    public function testArbitraryTimezones(){
+        //could do more complex daylight savings tests here too
+        $dateCalculator = new DateCalculator(
+            '01/01/2019',
+            '01/01/2019',
+            'Africa/Cairo',
+            'Asia/Bangkok'
+        );
+
+        //29 because 24 hours in one day + 5 hours time difference
+        $this->assertEquals(29, $dateCalculator->getNumberOfDays('hours'));
     }
     
 }
