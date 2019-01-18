@@ -72,43 +72,28 @@ $form = new DateCalculatorForm(
             <h2>Unit</h2>
             <div>
                 <select name="unit">
-                    <option value="seconds">Seconds</option>
-                    <option value="minutes">Minutes</option>
-                    <option value="hours">Hours</option>
-                    <option value="years">Years</option>				
+                <?php foreach ($form->getUnits() as $key=>$value):
+                    if($key == $form->getUnit()):
+                        echo '<option value="'.$key.'" selected>'.$value.'</option>';
+                    else:
+                        echo '<option value="'.$key.'">'.$value.'</option>';
+                    endif;
+                endforeach;?>                    				
                 </select>
             </div>
             <div>
                 <input type="submit" value="Submit" />
             </div>
         </form>
-        <?php
-        $dateCalculator = new DateCalculator(
-            $form->getStartDate(),
-            $form->getEndDate(),
-            $form->getStartTimezone('value'),
-            $form->getEndTimezone('value'),
-            $form->getUnit()
-        );
-        ?>
         <hr/>
-
-        <h3>Number of Days</h3>
-        <div>
-            <p><?php echo $dateCalculator->getNumberOfDays('days'); ?> days</p>
-            <p><?php echo $dateCalculator->getNumberOfDays($form->getUnit()) . ' ' . $form->getUnit(); ?></p>
-        </div>
-
-        <h3>Weekdays</h3>
-        <div>
-            <p><?php echo $dateCalculator->getWeekdays('days'); ?> week days</p>
-            <p><?php echo $dateCalculator->getWeekdays($form->getUnit()) . ' ' . $form->getUnit(); ?></p>
-        </div>
-
-        <h3>Complete Weeks</h3>
-        <div>
-            <p><?php echo $dateCalculator->getCompleteWeeks('weeks'); ?> complete weeks</p>
-            <p><?php echo $dateCalculator->getCompleteWeeks($form->getUnit()) . ' ' . $form->getUnit(); ?></p>
-        </div>
+        <?php if($form->validate()): ?>
+            <?php foreach($form->getDateCalculationData() as $key=>$data): ?>
+            <h3><?php echo $data['label'];?></h3>
+            <p><?php echo $data['value']; ?> <?php echo $data['default_unit']; ?></p>
+            <p><?php echo $data['value_in_unit']; ?> <?php echo $form->getUnit(); ?></p>
+            <?php endforeach; ?>
+        <?php else: ?>    
+            <div class="error">Invalid Form Data</div>
+        <?php endif; ?>
     </body>
 </html>
