@@ -12,6 +12,7 @@ Composer (to run tests)
 1. Choose a date in both date fields using the calendar
 1. Choose a timezone in both timezone select fields
 1. Choose an unit for additional output
+1. Submit form and check values below
 
 ## The Challenge
 
