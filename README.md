@@ -2,11 +2,17 @@
 
 ## Pre-requisites
 
-LAMP stack
+Webserver e.g. Apache
+PHP
+Composer (to run tests)
 
 ## Installation
 
-Clone the repository visit the webroot in your browser
+1. Clone the repository visit the webroot in your browser, you should see a form
+1. Choose a date in both date fields using the calendar
+1. Choose a timezone in both timezone select fields
+1. Choose an unit for additional output
+1. Submit form and check values below
 
 ## The Challenge
 
@@ -19,21 +25,20 @@ Clone the repository visit the webroot in your browser
 ## The Solution
 
 1. PHP / Web front-end using JS calendar plug-in
-1. Submit form (no validation!) to perform calculation
+1. Submit form to perform calculation
 1. Instantiate DateCalulator Class
 1. Call relevant functions
 
 ## Run tests
 
-1. run `composer install`
-1. run `vendor/phpunit/phpunit/phpunit tests/DateCalculatorTest.php`
+1. Navigate in terminal to webroot
+1. Run `composer install`
+1. Run `vendor/phpunit/phpunit/phpunit tests/DateCalculatorTest.php`
 
 ## Possible improvements
 
-1. Further Testing
-1. General refactor
+1. Further PHPUnit Tests
 1. PHPDoc
 1. Re-visit algorithm to improve performance
-1. Improve interface
-1. Implement code re-use for calculating different units 
-1. PHPUnit tests
+1. Improve interface with CSS
+1. Read default values from a configuration file

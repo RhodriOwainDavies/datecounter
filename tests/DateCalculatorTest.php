@@ -1,16 +1,16 @@
 <?php
 include_once("DateCalculator.class.php");
-//include_once('../vendor/phpunit/phpunit/src/Framework/TestCase.php');
 
-//  use Framework\TestCase;
 use PHPUnit\Framework\TestCase;
 
 class DateCalculatorTest extends TestCase{
 
     public function testCountDays() {
         $dateCalculator = new DateCalculator(
-            date('U', strtotime('yesterday')),
-            date('U', strtotime('today'))
+            '01/01/2019',
+            '02/01/2019',
+            'UTC',
+            'UTC'
         );
 
         $this->assertEquals(2, $dateCalculator->getNumberOfDays());
@@ -18,18 +18,69 @@ class DateCalculatorTest extends TestCase{
 
     public function testGetWeekdays(){
         $dateCalculator = new DateCalculator(
-            date('U', strtotime('01/01/2019')),
-            date('U', strtotime('01/14/2019'))
+            '01/01/2019',
+            '14/01/2019',
+            'UTC',
+            'UTC'
         );
-        $this->assertEquals(10, $dateCalculator->getWeekDays());    
+        $this->assertEquals(10, $dateCalculator->getNumberOfWeekDays());    
     }
 
     public function testGetCompleteWeeks(){
         $dateCalculator = new DateCalculator(
-            date('U', strtotime('01/01/2019')),
-            date('U', strtotime('01/14/2019'))
+            '01/01/2019',
+            '14/01/2019',
+            'UTC',
+            'UTC'
         );
 
-        $this->assertEquals(2, $dateCalculator->getCompleteWeeks());           
+        $this->assertEquals(2, $dateCalculator->getNumberOfCompleteWeeks());           
     }
+    
+    public function testArbitraryTimezones(){
+        //could do more complex daylight savings tests here too
+        $dateCalculator = new DateCalculator(
+            '01/01/2019',
+            '01/01/2019',
+            'Africa/Cairo',
+            'Asia/Bangkok'
+        );
+
+        //29 because 24 hours in one day + 5 hours time difference
+        $this->assertEquals(29, $dateCalculator->getNumberOfDays('hours'));
+    }
+    
+    public function testLocalTimezones(){
+        //pass dates in reverse order as additional test
+        $dateCalculator = new DateCalculator(
+            '31/12/2018',
+            '01/01/2018',
+            'Europe/Dublin',
+            'Europe/London'
+        );
+
+        $this->assertEquals(365, $dateCalculator->getNumberOfDays());
+    }
+    
+    public function testDateValidation(){
+        $this->expectException(\InvalidArgumentException::class);
+        $dateCalculator = new DateCalculator(
+            '31-12-2018',
+            '01-01/2019',
+            'UTC',
+            'UTC'
+        );
+        
+    }
+    
+    public function testTimezoneValidation(){
+        $this->expectException(\InvalidArgumentException::class);
+        $dateCalculator = new DateCalculator(
+            '31/12/2018',
+            '01/01/2019',
+            'London',
+            'UTC'
+        );
+        
+    }    
 }

@@ -1,143 +1,234 @@
 <?php
 
 /**
- *
+ * Class DateCalculator
+ * 
+ * @author Rhodri Davies <texasradioband@hotmail.com>
  */
 class DateCalculator{
 	
-	/**
-	 *
-	 */
-	const SECONDS_IN_DAY = 86400;
-	/**
-	 *
-	 */
-	const FIRST_DAY_OF_WEEK = 7;//Sunday in date('N')
+    /**
+     * Number of seconds in a minute
+     * 
+     * int
+     */
+    const SECONDS_IN_MINUTE = 60;
+    
+    /**
+     * Number of seconds in an hour
+     * 
+     * int
+     */    
+    const SECONDS_IN_HOUR = 3600;
+    
+    /**
+     * Number of seconds in a day
+     * 
+     * int
+     */    
+    const SECONDS_IN_DAY = 86400;
+    
+    /**
+     * Number of seconds in a week
+     * 
+     * int
+     */    
+    const SECONDS_IN_WEEK = 604800;
+    
+    /**
+     * Number of seconds in a year
+     * 
+     * int
+     */    
+    const SECONDS_IN_YEAR = 31557600;
+    
+    /**
+     * Number of week days in a week
+     * 
+     * int
+     */
+    const WEEKDAYS_IN_WEEK = 5;
 
-	/**
-	 * 
-	 */
-	private $start;
+    /**
+     * Number of days in a week
+     * 
+     * int
+     */
+    const DAYS_IN_WEEK = 7;
+    
+    /**
+     * First day of the week in PHP date('N') format (Sunday)
+     * 
+     * int
+     */
+    const FIRST_DAY_OF_WEEK = 7;
 
-	/**
-	 *
-	 */
-	private $end;
+    /**
+     * Start date time in unix epoch
+     * 
+     * int
+     */
+    private $start;
 
-	/**
-	 *
-	 */
-	function __construct($start, $end) {
-        $this->start = $start;
-        $this->end = $end;
+    /**
+     * End date time in unix epoch 
+     * 
+     * int
+     */
+    private $end;
+
+    /**
+     * DateCalculator class constructor
+     * 
+     * @param string $start start date in the PHP date format d/m/Y
+     * @param string $end end date in the PHP date format d/m/Y
+     * @param string $startTimezone name of start timezone
+     * @param string $endTimezone name of end timezone
+     */
+    function __construct($start, $end, $startTimezone, $endTimezone) {
+        //use utc to figure out individual offsets
+        $utc = new DateTime();
+        
+        try{
+            $startOffset = timezone_offset_get(timezone_open($startTimezone), $utc);
+        } catch (Exception $e){
+            throw new InvalidArgumentException('Start timezone is wrong');
+        }
+        
+        try{
+            $endOffset = timezone_offset_get(timezone_open($endTimezone), $utc);
+        } catch (Exception $e){
+            throw new InvalidArgumentException('End timezone is wrong');
+        }
+        
+        $startParts = explode('/', $start);
+        $endParts = explode('/', $end);
+        if(count($startParts) != 3){
+            throw new InvalidArgumentException('Start date is wrong format');
+        }
+        $startTimestamp = mktime(0, 0, $startOffset, $startParts[1], $startParts[0], $startParts[2]);
+        
+        if(count($endParts) != 3){
+            throw new InvalidArgumentException('End date is wrong format');
+        }
+        $endTimestamp = mktime(0, 0, $endOffset, $endParts[1], $endParts[0], $endParts[2]);
+
+        //allow date values to be passed in, in either order
+        if ($startTimestamp < $endTimestamp){
+            $this->start = $startTimestamp;
+            $this->end = $endTimestamp;
+        } else {
+            $this->start = $endTimestamp;
+            $this->end = $startTimestamp;
+        }
     }
 	
-	/**
-	 *
-	 */
-	public function getNumberOfDays($unit = 'days'){
-		//Incremement by one to make it inclusive of both dates
-		$numberOfDays = (($this->end - $this->start) / self::SECONDS_IN_DAY) + 1;
-		switch($unit){
-			default:
-				return $numberOfDays;
-				break;
-			case 'seconds':
-				return $numberOfDays * 60 * 60 * 24;
-				break;
-			case 'minutes':
-				return $numberOfDays * 60 * 24;
-				break;
-			case 'hours':
-				return $numberOfDays * 24;
-				break;				
-			case 'years':
-				return $numberOfDays / 365;
-				break;
-		}
-	}
+    /**
+     * Get number of days between start and end date
+     * 
+     * @param string $unit
+     * @return int
+     */
+    public function getNumberOfDays($unit = 'days'){
+        //incremement by one to make it inclusive of both dates
+        return $this->convertTimeUnit(
+            ($this->end - $this->start) + self::SECONDS_IN_DAY,
+            $unit
+        );
+    }
 
-	/**
-	 *
-	 */
-	public function getWeekdays($unit = 'days') {
-		
-		if ($this->end - $this->start < (self::SECONDS_IN_DAY * 7)) {
-			//less than one week
-			$noOfWeekdays = (($this->end - $this->start) / (self::SECONDS_IN_DAY)) + 1;
-		} else {
-			//find first monday after $this->start
-			$startDayOfWeek = date('N', $this->start);
-			if ($startDayOfWeek != 1) {
-				$firstMonday = $this->start + ((8 - $startDayOfWeek) * self::SECONDS_IN_DAY);
-			} else {
-				$firstMonday = $this->start;
-			}
+    /**
+     * Get number of week days between start and end date
+     * 
+     * @param string $unit
+     * @return int
+     */
+    public function getNumberOfWeekdays($unit = 'days') {
+        $difference = $this->end - $this->start;
+        if ($difference < self::SECONDS_IN_WEEK) {
+            //less than one week +1 to be inclusive of start and end dates
+            $noOfWeekdays = ($difference / (self::SECONDS_IN_DAY)) + 1;
+        } else {
+            //find first monday after start date
+            $startDayOfWeek = date('N', $this->start);
+            if ($startDayOfWeek != 1) {
+                $firstMonday = $this->start 
+                    + ((8 - $startDayOfWeek) * self::SECONDS_IN_DAY);
+            } else {
+                $firstMonday = $this->start;
+            }
 
-			//find the last Friday before $end
-			$endDayOfWeek = date('N', $this->end);
-			if ($endDayOfWeek != 5) {
-				$lastFriday = $this->end
-					+ ((-2 - $endDayOfWeek) * self::SECONDS_IN_DAY);
+            //find the last Friday before end date
+            $endDayOfWeek = date('N', $this->end);
+            if ($endDayOfWeek != 5) {
+                $lastFriday = $this->end
+                    + ((-2 - $endDayOfWeek) * self::SECONDS_IN_DAY);
+            } else {
+                $lastFriday = $this->end;
+            }
 
-			} else {
-				$lastFriday = $this->end;
-			}
-			
-			$startSunday = $firstMonday - self::SECONDS_IN_DAY;
-			$endSunday = $lastFriday + (2 * self::SECONDS_IN_DAY);
-				
-			$noOfWeekdays = (5 * ((($endSunday - $startSunday) / self::SECONDS_IN_DAY)) / 7);
+            $startSunday = $firstMonday - self::SECONDS_IN_DAY;
+            $endSunday = $lastFriday + (2 * self::SECONDS_IN_DAY);
+            
+            $noOfWeekdays = self::WEEKDAYS_IN_WEEK * 
+                    ((($endSunday - $startSunday) / self::SECONDS_IN_DAY)) 
+                    / self::DAYS_IN_WEEK;
 
-			if (date('N', $this->start) != 1) {
-				$noOfWeekdays += (6 - date('N', $this->start)) ;
-			}
-			if (date('N', $this->end) != 5) {
-				$noOfWeekdays += (date('N', $this->end));
-			}
-		}
+            if (date('N', $this->start) != 1) {
+                $noOfWeekdays += (6 - date('N', $this->start)) ;
+            }
+            if (date('N', $this->end) != 5) {
+                $noOfWeekdays += (date('N', $this->end));
+            }
+        }
+        return $this->convertTimeUnit(
+            $noOfWeekdays * self::SECONDS_IN_DAY,
+            $unit
+        );
+    }
 
-		switch($unit){
-			default:
-				return $noOfWeekdays;
-				break;
-			case 'seconds':
-				return $noOfWeekdays * 60 * 60 * 24;
-				break;
-			case 'minutes':
-				return $noOfWeekdays * 60 * 24;
-				break;
-			case 'hours':
-				return $noOfWeekdays * 24;
-				break;				
-			case 'years':
-				return $noOfWeekdays / 365;
-				break;
-		}
-	}
-
-	/**
-	 *
-	 */
-	public function getCompleteWeeks($unit = 'weeks') {
-		$weeks = floor($this->getNumberOfDays() / 7);
-
-		switch($unit){
-			default:
-				return $weeks;
-				break;
-			case 'seconds':
-				return $weeks * 60 * 60 * 24;
-				break;
-			case 'minutes':
-				return $weeks * 60 * 24;
-				break;
-			case 'hours':
-				return $weeks * 24 * 7;
-				break;				
-			case 'years':
-				return $weeks / 365;
-				break;
-		}
-	}
+    /**
+     * Get number of complete weeks between start and end date
+     * 
+     * @param string $unit
+     * @return int
+     */
+    public function getNumberOfCompleteWeeks($unit = 'weeks') {
+        $weeks = floor($this->getNumberOfDays() / self::DAYS_IN_WEEK);
+        //return $weeks;
+        return $this->convertTimeUnit(
+            $weeks * self::SECONDS_IN_WEEK,
+            $unit
+        );
+    }
+    
+    /**
+     * Convert time unit
+     * 
+     * @param int $time 
+     * @param string $unit
+     * @return int
+     */
+    public function convertTimeUnit($time, $unit='seconds'){
+        switch($unit){
+            default:
+                return $time;
+                break;
+            case 'minutes':
+                return $time / self::SECONDS_IN_MINUTE;
+                break;
+            case 'hours':
+                return $time / self::SECONDS_IN_HOUR;
+                break;
+            case 'days':
+                return $time / self::SECONDS_IN_DAY;
+                break;
+            case 'weeks':
+                return $time / self::SECONDS_IN_WEEK;
+                break;
+            case 'years':
+                return $time / self::SECONDS_IN_YEAR;
+                break;
+        } 
+    }   
 }
